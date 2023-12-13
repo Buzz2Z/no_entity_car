@@ -1,0 +1,179 @@
+C251 COMPILER V5.60.0,  main                                                               13/12/23  19:15:02  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE main
+OBJECT MODULE PLACED IN .\Out_File\main.obj
+COMPILER INVOKED BY: E:\NIEZS\ARM\KeilC251\C251\BIN\C251.EXE ..\USER\src\main.c XSMALL INTR2 WARNINGLEVEL(3) BROWSE INCD
+                    -IR(..\..\Libraries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\inc;
+                    -..\USER\src) DEBUG PRINT(.\Out_File\main.lst) TABS(2) OBJECT(.\Out_File\main.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2020,逐飞科技
+    4           * All rights reserved.
+    5           * 技术讨论QQ群：一群：179029047(已满)  二群：244861897(已满)  三群：824575535
+    6           *
+    7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
+    9           *
+   10           * @file          main
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ790875685)
+   13           * @version       查看doc内version文件 版本说明
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC32G12K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2020-12-18
+   18           ********************************************************************************************************
+             -************/
+   19          
+   20          #include "headfile.h"
+   21          
+   22          
+   23          /*
+   24           * 系统频率，可查看board.h中的 FOSC 宏定义修改。
+   25           * board.h文件中FOSC的值设置为0,则程序自动设置系统频率为33.1776MHZ
+   26           * 在board_init中,已经将P54引脚设置为复位
+   27           * 如果需要使用P54引脚,可以在board.c文件中的board_init()函数中删除SET_P54_RESRT即可
+   28           */
+   29          //#define PWM_1 PWMA_CH1P_P20;
+   30          //#define PWM_2 PWMA_CH2P_P22;
+   31          //#define PLUSE_LEFT CTIM0_P34
+   32          //#define PLUSE_RIGHT CTIM3_P04
+   33          //#define DIR_LEFT P35
+   34          //#define DIR_RIGHT P53
+   35          //#define DIR_1 P62
+   36          //#define DIR_2 P66
+   37          //#define PWM_1 PWMA_CH3P_P64
+   38          //#define PWM_2 PWMA_CH1P_P60
+   39          
+   40          //int16 encoder_left = 0;
+   41          //int16 encoder_right = 0;
+   42          uint16 right_adc_1=0,adc_2=0,adc_3=0,adc_4=0;
+   43          uint16 count =0;
+   44          float pos;
+   45          float temp_test;
+   46          void main()
+   47          {
+   48   1        board_init();     // 初始化寄存器,勿删除此句代码。
+   49   1        
+   50   1        // 此处编写用户代码(例如：外设初始化代码等)
+   51   1        lcd_init();
+   52   1        motor_init();
+   53   1        //imu660ra_init();
+   54   1      //  servo_init();
+   55   1      //   adc_init(Right_ADC_Pin,ADC_SYSclk_DIV_2);
+C251 COMPILER V5.60.0,  main                                                               13/12/23  19:15:02  PAGE 2   
+
+   56   1        adc_Init_all();
+   57   1        pit_timer_ms(TIM_1,1);     //定时器4  50ms中断
+   58   1        bluetooth_ch9141_init();
+   59   1      //    ctimer_count_init(PLUSE_LEFT);
+   60   1      //    ctimer_count_init(PLUSE_RIGHT);
+   61   1        
+   62   1      //    gpio_mode(P6_4,GPO_PP);
+   63   1      //    gpio_mode(P6_0,GPO_PP);
+   64   1      //    pwm_init(PWMA_CH3P_P64, 17000, 0);
+   65   1      //    pwm_init(PWMA_CH1P_P60, 17000, 0);
+   66   1      //  pwm_init(PWMA_CH4P_P66, 10000, 0);
+   67   1      //  gpio_mode(P6_4,GPO_PP);
+   68   1      //  gpio_pull_set(P6_4,PULLUP);
+   69   1        //EnableGlbalIRQ();   //开启总中断
+   70   1          while(1)
+   71   1        {
+   72   2      //    encoder_left = ctimer_count_read(PLUSE_LEFT);
+   73   2      //    if (DIR_LEFT ==0) encoder_left = -encoder_left;
+   74   2      //    else  encoder_left = encoder_left;
+   75   2      //    ctimer_count_clean(PLUSE_LEFT);
+   76   2      //     right_adc_1 = adc_once(Left_ADC_Pin,ADC_12BIT);
+   77   2      //    adc_2 = adc_once(LeftXie_ADC_Pin,ADC_12BIT);
+   78   2      //    adc_3 = adc_once(RightXie_ADC_Pin,ADC_12BIT);
+   79   2      //    adc_4 = adc_once(Right_ADC_Pin,ADC_12BIT);
+   80   2      //    encoder_right = ctimer_count_read(PLUSE_RIGHT);
+   81   2      //    if (DIR_RIGHT ==0) encoder_right = -encoder_right;
+   82   2      //    else  encoder_right = encoder_right;
+   83   2      //    ctimer_count_clean(PLUSE_RIGHT);
+   84   2          
+   85   2      //    Moto_L(1000);
+   86   2      //    Moto_R(1000);
+   87   2      //    DIR_1  = 0;
+   88   2      //    pwm_duty(PWMA_CH3P_P64,1000);
+   89   2      //    DIR_2 = 0;
+   90   2      //    pwm_duty(PWMA_CH1P_P60,5000);
+   91   2      //    delay_ms(2000);
+   92   2      //       
+   93   2      //    DIR_1  = 1;
+   94   2      //    pwm_duty(PWMA_CH3P_P64,5000);
+   95   2      //    DIR_2 = 1;
+   96   2      //    pwm_duty(PWMA_CH1P_P60,5000);
+   97   2      //    delay_ms(2000);
+   98   2          //Get_Encoder();
+   99   2          //Moto_L(1000);
+  100   2          //left_motor_pid(1);
+  101   2          ///uart_putstr(UART_1,"123");
+  102   2          //uart_putchar(UART_1,123);
+  103   2          //ADC_Date_Fitier();
+  104   2          //right_adc = adc_mean_filter  (Right_ADC_Pin,ADC_12BIT,5);
+  105   2          //ADC_Date_Fitier();
+  106   2          
+  107   2          //imu660ra_get_gyro();
+  108   2          
+  109   2          temp_test = 1800/3800.0*500;
+  110   2          printf("g:%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",Left_Encoder*0.0017f*10,Right_Encoder*0.0017f*10,Left_Xie_A
+             -dc,Right_Xie_Adc,Left_Adc,Right_Adc,100.0,right_wheel_goal,left_wheel_goal);
+  111   2          //printf("g: %d,%d,%d,%d,%d\r\n",Left_Encoder,right_adc_1,adc_2,adc_3,adc_4);
+  112   2          //printf("%f\r\n",Left_Encoder);
+  113   2          lcd_showstr(0,0,"lyx");
+  114   2          lcd_showuint16(0,1,count++);
+  115   2          //lcd_showfloat(0,2,1234.56,4,1); 
+  116   2      //    lcd_showuint8(0,2,right_adc_1);
+  117   2          lcd_showint16(0,2,Left_Encoder);
+  118   2          lcd_showint16(0,3,Right_Encoder);
+  119   2          
+  120   2          lcd_showint16(0,4,imu660ra_gyro_x);
+C251 COMPILER V5.60.0,  main                                                               13/12/23  19:15:02  PAGE 3   
+
+  121   2          lcd_showint16(0,5,imu660ra_gyro_y);
+  122   2          lcd_showint16(0,6,imu660ra_gyro_z);
+  123   2          
+  124   2      //    lcd_showint16(0,4,Left_Adc);
+  125   2      //    lcd_showint16(0,5,Right_Adc);
+  126   2      //    lcd_showint16(0,6,Left_Xie_Adc);
+  127   2      //    lcd_showint16(0,7,Right_Xie_Adc);
+  128   2          //lcd_showint16(0,5,a);
+  129   2          //lcd_showfloat(0,5,error_sum,50,50);
+  130   2          //delay_ms(50);
+  131   2          //pwm_init(PWM_1,17000,0);
+  132   2          
+  133   2          //pwm_duty(PWMA_CH4P_P66,10000);
+  134   2           // 此处编写需要循环执行的代码
+  135   2          }
+  136   1      }
+  137          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       255     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        18     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        65     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
